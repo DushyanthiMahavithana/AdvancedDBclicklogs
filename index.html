@@ -2,177 +2,178 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <link rel="stylesheet" href="index.css">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Open+Sans+Condensed:300|Roboto" rel="stylesheet">
-  <link href='https://fonts.googleapis.com/css?family=Ek+Mukta:300' rel='stylesheet' type='text/css'>
-  <title>Tap Logger</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link rel="stylesheet" href="index.css">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans|Open+Sans+Condensed:300|Roboto" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Ek+Mukta:300' rel='stylesheet' type='text/css'>
+	<title>Tap Logger</title>
 </head>
 
 <body>
-  <div id="buttoncontainer">
-    <button type="button" onclick="saveDependentVariable('android')" id="variable1">Android</button>
-    <button type="button" onclick="saveDependentVariable('pc')" id="variable2">PC</button>
-  </div>
+	<div id="buttoncontainer">
+		<button type="button" onclick="saveDependentVariable('android')" id="variable1">Android</button>
+		<button type="button" onclick="saveDependentVariable('pc')" id="variable2">PC</button>
+	</div>
 
-  <div id="container" class="container">
-    <div id="counter"></div>
-    <div id="action"></div>
-    <button id="tapHere"><img src="round_touch_app_white_36dp.png" /></button>
-    <button id="continue" onclick="startNext()">Continue</button>
-  </div>
+	<div id="container" class="container">
+		<div id="counter"></div>
+		<div id="action"></div>
+		<button id="tapHere"><img src="round_touch_app_white_36dp.png" /></button>
+		<button id="continue" onclick="startNext()">Continue</button>
+	</div>
 
-  <!-- All JS as a module -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+	<!-- All JS as a module -->
+	<script type="module">
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+		import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-    // ===== FIREBASE CONFIG =====
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+		// ===== FIREBASE CONFIG =====
+		const firebaseConfig = {
+			apiKey: "AIzaSyCR7j79jQDSdbJbxenorFfqw4cbpHQWXZM",
+			authDomain: "cwadvanceddb.firebaseapp.com",
+			projectId: "cwadvanceddb",
+			storageBucket: "cwadvanceddb.firebasestorage.app",
+			messagingSenderId: "912267159046",
+			appId: "1:912267159046:web:22e179a727233f74514587",
+			measurementId: "G-S2P893Z823"
+		};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+		const app = initializeApp(firebaseConfig);
+		const db = getFirestore(app);
 
-    async function sendTapToFirebase(tapRecord) {
-      try {
-        await addDoc(collection(db, "tap_logs"), tapRecord);
-        console.log("Tap saved:", tapRecord);
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-    }
+		async function sendTapToFirebase(tapRecord) {
+			try {
+				await addDoc(collection(db, "tap_logs"), tapRecord);
+				console.log("Tap saved:", tapRecord);
+			} catch (e) {
+				console.error("Error adding document: ", e);
+			}
+		}
 
-    // ===== TAP LOGGING LOGIC =====
-    let totalTouchDuration = 0;
-    let tapCounter = 0;
-    let startTap = 0,
-      endTap = 0;
-    let tapSessionStartTime = 0;
-    let tapLogsArray = [];
-    let tapLimit = 50;
-    let uniqueIdentifier = 0;
-    let dependentVariable = "";
-    let showFeedback = false;
-    let interfaceVariations = 2;
-    let interfaceSequence = 1;
+		// ===== TAP LOGGING LOGIC =====
+		let totalTouchDuration = 0;
+		let tapCounter = 0;
+		let startTap = 0,
+			endTap = 0;
+		let tapSessionStartTime = 0;
+		let tapLogsArray = [];
+		let tapLimit = 50;
+		let uniqueIdentifier = 0;
+		let dependentVariable = "";
+		let showFeedback = false;
+		let interfaceVariations = 2;
+		let interfaceSequence = 1;
 
-    window.sendTapToFirebase = sendTapToFirebase; // expose globally just in case
+		window.sendTapToFirebase = sendTapToFirebase; // expose globally just in case
 
-    function onLoad() {
-      const el = document.getElementById('tapHere');
-      const d = new Date();
-      showFeedback = d.getTime() % 2 === 0;
-      uniqueIdentifier = d.getTime() + "" + Math.floor(Math.random() * 42);
+		function onLoad() {
+			const el = document.getElementById('tapHere');
+			const d = new Date();
+			showFeedback = d.getTime() % 2 === 0;
+			uniqueIdentifier = d.getTime() + "" + Math.floor(Math.random() * 42);
 
-      ["mouseup", "mousedown", "touchstart", "touchend"].forEach(te => {
-        el.addEventListener(te, tapityTap);
-      });
-    }
+			["mouseup", "mousedown", "touchstart", "touchend"].forEach(te => {
+				el.addEventListener(te, tapityTap);
+			});
+		}
 
-    function saveDependentVariable(dVariable) {
-      dependentVariable = dVariable;
-      document.getElementById("buttoncontainer").style.display = "none";
-      document.getElementById("container").style.display = "inline-block";
-    }
+		function saveDependentVariable(dVariable) {
+			dependentVariable = dVariable;
+			document.getElementById("buttoncontainer").style.display = "none";
+			document.getElementById("container").style.display = "inline-block";
+		}
 
-    function tapityTap(event) {
-      const d = new Date();
-      const te = event.type;
-      document.getElementById("action").innerHTML = te;
+		function tapityTap(event) {
+			const d = new Date();
+			const te = event.type;
+			document.getElementById("action").innerHTML = te;
 
-      switch (te) {
-        case "touchstart":
-        case "mousedown":
-          event.preventDefault?.();
-          startTap = d.getTime();
-          if (tapSessionStartTime === 0) tapSessionStartTime = startTap;
-          break;
+			switch (te) {
+				case "touchstart":
+				case "mousedown":
+					event.preventDefault?.();
+					startTap = d.getTime();
+					if (tapSessionStartTime === 0) tapSessionStartTime = startTap;
+					break;
 
-        case "touchend":
-        case "mouseup":
-          event.preventDefault?.();
-          endTap = d.getTime();
-          const duration = endTap - startTap;
+				case "touchend":
+				case "mouseup":
+					event.preventDefault?.();
+					endTap = d.getTime();
+					const duration = endTap - startTap;
 
-          if (startTap > 0 && endTap > 0 && startTap <= endTap) {
-            tapCounter++;
-            totalTouchDuration += duration;
-            const meanTouchDuration = totalTouchDuration / tapCounter;
+					if (startTap > 0 && endTap > 0 && startTap <= endTap) {
+						tapCounter++;
+						totalTouchDuration += duration;
+						const meanTouchDuration = totalTouchDuration / tapCounter;
 
-            const tap = {
-              tapSequenceNumber: tapCounter,
-              startTimestamp: startTap,
-              endTimestamp: endTap,
-              interfaceSequence: interfaceSequence,
-              interface: showFeedback ? "feedbackshown" : "nofeedback"
-            };
+						const tap = {
+							tapSequenceNumber: tapCounter,
+							startTimestamp: startTap,
+							endTimestamp: endTap,
+							interfaceSequence: interfaceSequence,
+							interface: showFeedback ? "feedbackshown" : "nofeedback"
+						};
 
-            tapLogsArray.push(tap);
+						tapLogsArray.push(tap);
 
-            console.log(`Tap #${tapCounter}; duration: ${duration} ms`);
+						console.log(`Tap #${tapCounter}; duration: ${duration} ms`);
 
-            if (tapCounter >= tapLimit) {
-              interfaceSequence++;
-              if (interfaceSequence > interfaceVariations) {
-                document.getElementById("tapHere").style.display = "none";
-                syncToServer();
-              } else {
-                document.getElementById("counter").innerHTML = `Mean tap duration: ${Math.round(meanTouchDuration)} ms`;
-                document.getElementById("tapHere").style.display = "none";
-                document.getElementById("continue").style.display = "block";
-              }
-            } else {
-              document.getElementById("counter").innerHTML = `Mean tap duration: ${Math.round(meanTouchDuration)} ms`;
-            }
-          }
+						if (tapCounter >= tapLimit) {
+							interfaceSequence++;
+							if (interfaceSequence > interfaceVariations) {
+								document.getElementById("tapHere").style.display = "none";
+								syncToServer();
+							} else {
+								document.getElementById("counter").innerHTML = `Mean tap duration: ${Math.round(meanTouchDuration)} ms`;
+								document.getElementById("tapHere").style.display = "none";
+								document.getElementById("continue").style.display = "block";
+							}
+						} else {
+							document.getElementById("counter").innerHTML = `Mean tap duration: ${Math.round(meanTouchDuration)} ms`;
+						}
+					}
 
-          startTap = 0;
-          endTap = 0;
-          break;
-      }
-    }
+					startTap = 0;
+					endTap = 0;
+					break;
+			}
+		}
 
-    function startNext() {
-      startTap = 0;
-      endTap = 0;
-      tapCounter = 0;
-      totalTouchDuration = 0;
-      document.getElementById("tapHere").style.display = "block";
-      document.getElementById("continue").style.display = "none";
-      document.getElementById("counter").innerHTML = "";
-      showFeedback = !showFeedback;
-    }
+		function startNext() {
+			startTap = 0;
+			endTap = 0;
+			tapCounter = 0;
+			totalTouchDuration = 0;
+			document.getElementById("tapHere").style.display = "block";
+			document.getElementById("continue").style.display = "none";
+			document.getElementById("counter").innerHTML = "";
+			showFeedback = !showFeedback;
+		}
 
-    async function syncToServer() {
-      for (const tap of tapLogsArray) {
-        const record = {
-          session_id: uniqueIdentifier,
-          platform: dependentVariable,
-          sequence: tap.tapSequenceNumber,
-          start_time: tap.startTimestamp,
-          end_time: tap.endTimestamp,
-          duration: tap.endTimestamp - tap.startTimestamp,
-          interface_type: tap.interface,
-          interface_sequence: tap.interfaceSequence,
-          timestamp: new Date().toISOString()
-        };
-        await sendTapToFirebase(record);
-      }
-      document.getElementById("container").innerHTML = '<span class="spanWhite">Data saved successfully to Firebase!</span>';
-    }
+		async function syncToServer() {
+			for (const tap of tapLogsArray) {
+				const record = {
+					session_id: uniqueIdentifier,
+					platform: dependentVariable,
+					sequence: tap.tapSequenceNumber,
+					start_time: tap.startTimestamp,
+					end_time: tap.endTimestamp,
+					duration: tap.endTimestamp - tap.startTimestamp,
+					interface_type: tap.interface,
+					interface_sequence: tap.interfaceSequence,
+					timestamp: new Date().toISOString()
+				};
+				await sendTapToFirebase(record);
+			}
+			document.getElementById("container").innerHTML = '<span class="spanWhite">Data saved successfully to Firebase!</span>';
+		}
 
-    window.addEventListener("load", onLoad);
-    window.saveDependentVariable = saveDependentVariable;
-    window.startNext = startNext;
-  </script>
+		window.addEventListener("load", onLoad);
+		window.saveDependentVariable = saveDependentVariable;
+		window.startNext = startNext;
+	</script>
 </body>
 
 </html>
