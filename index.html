@@ -23,12 +23,12 @@
 		<button id="continue" onclick="startNext()">Continue</button>
 	</div>
 
-	<!-- All JS as a module -->
+	
 	<script type="module">
 		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 		import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-		// ===== FIREBASE CONFIG =====
+		// FIREBASE CONFIG 
 		const firebaseConfig = {
 			apiKey: "AIzaSyCR7j79jQDSdbJbxenorFfqw4cbpHQWXZM",
 			authDomain: "cwadvanceddb.firebaseapp.com",
@@ -51,7 +51,7 @@
 			}
 		}
 
-		// ===== TAP LOGGING LOGIC =====
+		// TAP LOGGING LOGIC
 		let totalTouchDuration = 0;
 		let tapCounter = 0;
 		let startTap = 0,
@@ -126,12 +126,12 @@
 								document.getElementById("tapHere").style.display = "none";
 								syncToServer();
 							} else {
-								document.getElementById("counter").innerHTML = `Mean tap duration: ${Math.round(meanTouchDuration)} ms`;
+								document.getElementById("counter").innerHTML = `Mean tap duration: <span class="spanTime">${Math.round(meanTouchDuration)}</span> ms`;
 								document.getElementById("tapHere").style.display = "none";
 								document.getElementById("continue").style.display = "block";
 							}
 						} else {
-							document.getElementById("counter").innerHTML = `Mean tap duration: ${Math.round(meanTouchDuration)} ms`;
+							document.getElementById("counter").innerHTML = `Mean tap duration: <span class="spanTime"> ${Math.round(meanTouchDuration)}</span> ms`;
 						}
 					}
 
