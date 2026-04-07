@@ -1,5 +1,3 @@
-import { sendTapToFirebase } from './firebase.js';
-
 function syncToServer() {
     tapLogsArray.forEach(tapString => {
         const tap = JSON.parse(tapString);
@@ -16,8 +14,9 @@ function syncToServer() {
             timestamp: new Date().toISOString()
         };
 
-        sendTapToFirebase(record);
+        window.sendTapToFirebase(record);
     });
 
-    document.getElementById("container").innerHTML = '<span class="spanWhite">Data saved successfully to Firebase!</span>';
+    document.getElementById("container").innerHTML =
+        '<span class="spanWhite">Data saved successfully to Firebase!</span>';
 }

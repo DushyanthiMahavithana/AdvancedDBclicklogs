@@ -17,7 +17,7 @@
 		var tapLog = "";
 		var tapLogsArray = [];
 
-		
+
 		var tapLimit = 50;
 		var tapTimeOut = 60; //seconds
 		var uniqueIdentifier = 0;
@@ -273,35 +273,28 @@
 		}
 
 	</script>
-	<!-- Firebase SDK -->
+
+	<!-- Firebase SDK and function -->
 	<script type="module">
 		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 		import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-		// 🔥 Paste your Firebase config here
-		const firebaseConfig = {
-			apiKey: "YOUR_API_KEY",
-			authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-			projectId: "YOUR_PROJECT_ID",
-			storageBucket: "YOUR_PROJECT_ID.appspot.com",
-			messagingSenderId: "YOUR_SENDER_ID",
-			appId: "YOUR_APP_ID"
-		};
-
-		// Initialize Firebase
+		const firebaseConfig = { /* YOUR CONFIG */ };
 		const app = initializeApp(firebaseConfig);
 		const db = getFirestore(app);
 
-		// Function to send tap record to Firestore
-		export async function sendTapToFirebase(tapRecord) {
+		window.sendTapToFirebase = async function (tapRecord) {
 			try {
 				await addDoc(collection(db, "tap_logs"), tapRecord);
 				console.log("Tap saved:", tapRecord);
 			} catch (e) {
 				console.error("Error adding document: ", e);
 			}
-		}
+		};
 	</script>
+	
+	<!-- Your main JS (tap logging, syncToServer, etc.) -->
+	<script src="app.js"></script>
 
 </head>
 
